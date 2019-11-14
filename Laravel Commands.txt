@@ -1,0 +1,1181 @@
+﻿Laravel Commands: 2018/04/09
+-----------------------------
+php artisan serve
+
+دریافت راهنمایی در مورد دستورات:
+php artisan help migrate
+
+laravel new ProjectName
+composer create-project --prefer-dist laravel/laravel laraProject "5.5.*"
+
+php artisan -V -> Verision on Laravel
+
+php artisan make:controller TodosController --resource
+php artisan make:controller Admin/ArticleController -r --model=Article
+php artisan make:controller ProjectController -r --model=Project
+
+php artisan make:controller QuestionsController --resource --model=Question
+php artisan make:controller QuestionsController -r -m=Question
+
+--------------
+php artisan make:model Comment -m	ایجاد مدل و مایگریشن بدون کنترلر
+php artisan make:model Comment -mr	مدل و مایگریشن و ریسورس
+php artisan make:model Comment -mc	مدل و مایگریشن و کنترلر *****
+php artisan make:model Comment -a	Generate a migration, factory, and resource controller for the model *****
+--------------
+Use Queue:
+in .env file:
+QUEUE_DRIVER=sync -> QUEUE_DRIVER=database
+
+php artisan queue:table
+php artisan migrate
+php artisan make:job RobotJob
+
+php artisan queue:failed-table
+php artisan migrate
+
+php artisan queue:work -h -> help for queue:work
+php artisan queue:work -> اجرای کارهایی که در پایگاه داده به صف شده اند
+
+php artisan queue:work --queue=high,RobotJob
+php artisan queue:work --queue=RobotJob
+
+اجرای جاب ها از طریق برنامه زمان بندی:
+php artisan schedule:run
+
+Run Cron Job in Server:
+* * * * * php /path-to-your-project/artisan schedule:run >> /dev/null 2>&1
+------------------------------------------------------
+Api Retful:
+
+Example: in Postman:
+http://localhost:8000/api/v1/Agahis
+------------------------------------------------------
+ایجاد ریکووست برای ولیدیشن:
+php artisan make:request ArticleRequest
+
+Model with Migration:
+php artisan make:model Todo -m
+
+php artisan migrate
+php artisan migrate:fresh
+php artisan make:migration create_users_table
+  ساخت جدول همراه با اسم دلخواه به همراه ساخت فیلدهای ضروری:
+php artisan make:migration create_tasks_table --create=tasks
+
+php artisan migrate:fresh --seed
+در صورت پیغام خطای وجود نداشتن جدول پرمیشن باید دستور زیر غیرفعال گردد:
+app/providers/authserviceprovider.php
+
+   foreach ($this->getPermissions() as $permission){
+            Gate::define($permission->name, function ($user) use($permission) {
+            return $user->hasRole($permission->roles);
+        });
+        }
+------------------------------------------------------
+مشاهده وضعیت مایگریشن های ایجاد شده:
+php artisan migrate:status
+
+اضافه کردن یک سطر به جدول کاربران به وسیله مایگریشن:
+php artisan make:migration add_column_api_token_to_users_table --table=users
+----------------------------------------------------------
+Email:
+ php artisan make:mail ForgotPasswordMail --markdown=Emails.ForgotPassword
+-------
+Notification for Email Send:
+ php artisan make:notification ResetPasswordNotification
+-------
+ مسیر واقعی ResetPassword در لاراول:
+ \vendor\laravel\framework\src\Illuminate\Auth\Notifications
+------------
+روش مورد استفاده برای اارسال ایمیل فارسی فراموشی رمز عبور:
+1- php artisan make:notification MailResetPasswordToken
+2- فایل مورد‌ نظر را از دایرکتوری  App\Notifications باز کرده و کدهای زیر را در آن وارد می‌کنیم
+3- حالا مدل User.php  را باز کرده و متد  sendPasswordResetNotification  را مجدد و به شکل زیر بازنویسی می‌کنیم:
+4- php artisan vendor:publish
+5- ویرایش /resources/views/vendor/notifications
+و ویرایش resources/views/vendor/mail/html/themes/default
+تست ارسال ایمیل در: https://mailtrap.io
+مرجع:
+https://www.lydaweb.com/category/article/laravel/447/%D8%AA%D8%BA%DB%8C%DB%8C%D8%B1-%D9%85%D8%AA%D9%88%D9%86-%D8%A7%DB%8C%D9%85%DB%8C%D9%84-%D8%A8%D8%A7%D8%B2%DB%8C%D8%A7%D8%A8%DB%8C-%D8%B1%D9%85%D8%B2-%D8%B9%D8%A8%D9%88%D8%B1-%D8%AF%D8%B1-%D9%84%D8%A7%D8%B1%D8%A7%D9%88%D9%84
+----------------------------------------------------------
+دستورات مهم لاراول:
+if not = if ! = @unless() @endunless
+----------------------------------------------------------		
+آپدیت کردن نسخه مینور لاراول: Laravel Security Update:
+composer update
+اگر نیاز به آپدیت به نسخه خاصی باشه باید در فایل
+composer.json نسخه مورد نظر را تعیین کرده و سپس دستور کومپوزر آپدیت رو بزنیم
+----------------------------------------------------------
+برگشت مقادیر تکست باکس های فرم بعد از رویداد خطا یا ولیدیشن:
+Laravel after Validation or Error:
+ return back()->withInput();
+ in form:
+ <input type="text" name="username" value="{{ old('username') }}">
+ 
+ return redirect('form')->withInput(
+    $request->except('password')
+);
+----------------------------------------------------------
+Form Validation with Custome Error Message:
+
+$validator = \Validator::make($request->all(), [
+                'Title' => 'required|max:55',
+                'Tozihat' => 'required|max:1100',
+            ], [
+                'Title.required' => 'عنوان حتما باید وارد شود',
+                'Tozihat.required' => 'توضیحات آگهی حتما باید وارد شود',
+                'Title.max' => 'عنوان آگهی حداکثر می تواند 50 کاراکتر باشد!',
+                'Tozihat.max' => 'توضیحات آگهی حداکثر می تواند 1000 کاراکتر داشته باشد!',
+            ]);
+
+            if ($validator->fails()) {
+
+                return back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+----------------------------------------------------------
+ try {
+  } catch (\Exception $e) {
+            if (auth()->check() and auth()->user()->level == 'admin') {
+                $msg = $e->getMessage();
+            }else{
+                $msg = 'خطا در ذخیره پیام ارسالی. با عرض پوزش، لطفا صفحه را یک بار رفرش نمایید و دوباره پیام را ارسال فرمایید.';
+            }
+            session()->flash('alert-danger', $msg);
+            return back()->withInput();
+        }
+----------------------------------------------------------
+مشخص کردن طول متن فارسی ارسالی از فرم:
+function TextLength_UTF8($text) // Return UTF8 String Length
+    {
+        $len = mb_strlen($text, 'UTF-8');
+        return $len;
+    }
+----------------------------------------------------------
+----------------------------------------------------------
+اعمال تغییرات در آخرین جدول مایگریشن ایجاد شده:
+php artisan migrate:rollback
+php artisan migrate
+--------------
+php artisan db:seed
+
+npm install  یا npm i
+npm run dev
+npm run watch
+-----------------------------------
+Laravel Collective:
+composer require "laravelcollective/html":"^5.5.0"
+
+Providers:
+Collective\Html\HtmlServiceProvider::class,
+
+aliases:
+'Form' => Collective\Html\FormFacade::class,
+
+'Html' => Collective\Html\HtmlFacade::class,
+---------
+php artisan make:provider FormServiceProvider
+
+app.php :
+  * Application Service Providers...
+App\Providers\FormServiceProvider::class,
+----------
+	FormServiceProvider :
+use Form;
+	boot() :
+Form::component('bsText', 'components.form.text', ['name', 'value' => null, 'attributes' => []]);
+Form::component('bsTextArea', 'components.form.textarea', ['name', 'value' => null, 'attributes' => []]);
+Form::component('bsSubmit', 'components.form.submit', ['value' => 'submit', 'attributes' => []]);
+Form::component('hidden', 'components.form.hidden', ['name', 'value' => null, 'attributes' => []]);
+Form::component('file', 'components.form.file', ['name', 'attributes' => []]);
+---------------------------- tinker -------------------------
+php artisan tinker
+پرکردن اطلاعات یک سطر دیتابیس
+$todo = new App\Todo();
+$todo->text='Mehdi 1';
+$todo->body='for test';
+$todo->due='1397/01/21';
+$todo->save();
+مشاهده اطلاعات ذخیره شده
+App\Todo::all();
+App\Todo::find(1);
+--------
+تینکر به بزرگ و کوچک بودن حساس نیست و می توان خط بالا را بصورت زیر نوشت
+app\todo::find(1) البته باید حتما بار اول بصورت حروف بزرگ نوشت وادش میشه کوچک هم نوشت
+البته فقط باید اپ را بصورت بزرگ نوشت
+--------
+فیلتر کردن اطلاعات -> فقط ستون شرح را نمایش بده
+app\bid::pluck('bidsharh')
+App\bid::where('id',1)->get()
+App\bid::get()->pluck('id')->take(3)
+$mm = App\bid::get()->first()
+$mm->all()
+$mm->project->id
+---
+Use Faker in Tinker:
+factory(\App\Payment::class,500)->create()
+---
+استفاده از تینکر برای جداولی که به هم ارتباط دارند
+ $bid = App\Bid::first();
+$bid->user; تمام داده های کاربر مرتبط با پیشنهاد را برمیگرداند
+$bid->user->name اسم کاربر ایجاد کننده پیشنهاد را برمی گرداند
+----------------------------------- /tinker ---------------------
+Laravel User:
+php artisan make:auth
+
+php artisan make:policy PostPolicy
+php artisan make:policy PostPolicy --model=Post
+
+php artisan make:model Role -m
+
+php artisan make:middleware CheckAdminAuthenticated
+-----------------------------------
+php artisan route:list
+-----------------------------------
+Laravel Error 1071 Specified key was too long error
+AppServiceProvider.php :
+
+use Illuminate\Support\Facades\Schema;
+Schema::defaultStringLength(191);
+-----------------------------------
+مشکل در دسترسی به دیتابیس و ...
+دوباره ساختن تنظیمات و رفع مشکل
+Clear Cash:
+php artisan config:clear
+php artisan cache:clear
+
+پاک کردن تنظیمات و دوباره ساختن ان:
+composer dumpautoload
+
+مشکل در فارسی سازی صفحات لوگین و رجیستر - Login & Register Page:
+php artisan view:clear
+-----------------------------------
+eloquent-sluggable Package: for Laravel 5.5: ساختن اسلاگ یا مسیر از عنوان
+composer require cviebrock/eloquent-sluggable:^4.3
+
+php artisan vendor:publish --provider="Cviebrock\EloquentSluggable\ServiceProvider"
+----------------------------------- ***
+Install Image Convertor Tools: >>> *** > Important Tools for Image Converting & Crap & Resize & Watermark in Image
+composer require intervention/image
+
+providers:
+Intervention\Image\ImageServiceProvider::class,
+
+aliases :
+'Image' => Intervention\Image\Facades\Image::class,
+
+--- مثال:
+		$file = $request->file('filepic');
+        $PicName = time() . "_" . $file->getClientOriginalName();
+        $thumbPic = time() . "_min_" . $file->getClientOriginalName();
+        $path = 'Upload/Pic/';
+
+        if (!file_exists($path)) mkdir($path, 0777, true);
+        $img = Image::make($file->getRealPath())->save($path . $PicName );
+        $imgThumb = Image::make($file->getRealPath())->resize(100, 100)->save($path . $thumbPic);
+-----------------------------------
+install CkeEditor: نصب سی کی ادیتور بدون توانایی در اپلود تصویر از طریق آن
+composer require unisharp/laravel-ckeditor
+
+config/app.php:
+Unisharp\Ckeditor\ServiceProvider::class,
+
+After the above steps, run the below command which copies some of the files and folders from ‘vendor\unisharp\laravel-ckeditor’ to ‘public\vendor\unisharp\laravel-ckeditor’:
+
+php artisan vendor:publish --tag=ckeditor
+------------
+How To Use CKEditor:
+For instance, we have a textarea which should get replaced by CKEditor. We are adding id ‘summary-ckeditor’ to the textarea below.
+------------
+<textarea class="form-control" id="summary-ckeditor"></textarea>
+------------
+Next, we need to include ‘ckeditor.js’ file and write a JavaScript code which replaces textarea with CKEditor.
+----------
+<script src="{{ asset('vendor/unisharp/laravel-ckeditor/ckeditor.js') }}"></script>
+<script>CKEDITOR.replace( 'summary-ckeditor' );</script>
+-----------
+That’s it! Above JavaScript code replaces textarea with the CKEditor.
+-----------------------------------
+Install Chart.js:
+npm install chart.js --save
+---
+Chart 2:
+http://lavacharts.com
+https://www.chartjs.org/docs/latest/charts/line.html
+-----------------------------------
+Istall Jalali Tagvim: تقویم فارسی جلالی
+composer require morilog/jalali
+
+'providers' => [
+    Morilog\Jalali\JalaliServiceProvider::class,
+],
+'alias' => [
+    'jDate' => Morilog\Jalali\Facades\jDate::class
+]
+
+// default timestamp is now
+$date = \Morilog\Jalali\jDate::forge();
+// OR
+$date = jdate();
+
+// get relative 'ago' format
+$date = jDate::forge('now - 10 minutes')->ago() // 10 دقیقه پیش
+// OR
+$date = jdate('now - 10 minutes')->ago() // 10 دقیقه پیش
+----------
+تقویم و ابزار تبدیل کامل وریتا برای تبدیلات تاریخ فارسی:
+composer require hekmatinasser/verta
+
+https://github.com/hekmatinasser/verta
+// config/app.php
+'providers' => [
+    Hekmatinasser\Verta\VertaServiceProvider::class,
+],
+'alias' => [
+    'Verta' => Hekmatinasser\Verta\Verta::class,
+]
+
+در بالای هر فایل خود از کلاس ورتا استفاده میکند، از دستور زیر استفاده کنید
+use Verta;
+// or
+use Hekmatinasser\Verta\Verta;
+ایجاد کردن
+برای بدست آوردن تاریخ و زمان کنونی شمسی، از دستور زیر استفاده کنید
+
+$v = new Verta(); //1396-02-02 15:32:08
+$v = verta(); //1396-02-02 15:32:08
+-----------------------------------
+Event:
+php artisan event:generate
+-----------------------------------
+Mail:
+php artisan make:mail ActivationUserAccount
+-----------------------------------
+Publish provider file in Project:
+php artisan vendor:publish
+-----------------------------------
+کارهای ضروری در هنگام ایجاد پروژ] جدید:
+npm install
+php artisan make:auth
+composer require intervention/image
+composer require unisharp/laravel-ckeditor
+تاریخ شمسی ورتا:
+composer require hekmatinasser/verta
+composer require cviebrock/eloquent-sluggable:^4.3
+------
+نیاز نیست
+composer require morilog/jalali
+در صورت نیاز به چارت:
+npm install chart.js --save
+-----------------------------------
+Install sweet-alert 1:
+npm install sweetalert --save-dev
+
+//composer require uxweb/sweet-alert
+//npm install sweetalert@^2.0 --save-dev
+-----------------------------------
+How to remove a package from Laravel using composer?
+composer remove Vendor/Package Name 
+
+npm uninstall <name> removes the module from node_modules, but not package.json
+npm uninstall <name> --save also removes it from dependencies in package.json
+npm uninstall <name> --save-dev also removes it from devDependencies in package.json
+npm -g uninstall <name> --save also removes it globally
+-----------------------------------
+Redis Database Use:
+redis-cli
+-----------------------------------
+Install Seo Tools:
+composer require artesaos/seotools
+php artisan vendor:publish --provider="Artesaos\SEOTools\Providers\SEOToolsServiceProvider"
+-----------------------------------
+کار با کاربران در لاراول:
+auth()->user()->name
+auth()->user()->id
+auth()->check() بررسی لاگین کردن کاربر  >>> if(auth()->check())
+-----------------------------------
+انتقال پروژه بر روی سرور اشتراکی: Publish Project to Server:
+php artisan clear-compiled
+php artisan cache:clear
+php artisan config:clear
+php artisan optimize
+
+انتقال تمام فایل های پروژه به فولدر برای مثال لوکال
+اصلاح آدرس های فایل inex.php
+---------------------
+افزایش سرعت سایت لاراول: https://www.cloudways.com/blog/laravel-performance-optimization/
+//php artisan config:cache
+php artisan config:clear
+php artisan route:cache
+php artisan route:clear
+
+Classmap Optimization:
+php artisan optimize --force
+
+Composer Optimize Autoload:
+composer dumpautoload -o
+
+Remove Unused Service
+In the context of Laravel performance tuning, an important tip is not to load all services through the config. While you are there, always remember to disable unused services in the config files. Add comments to these service providers.
+
+php artisan optimize
+php artisan config:cache
+php artisan route:cache
+------------------------------------------------------
+Laravel Unit Test:
+To create a new test case, use the make:test Artisan command:
+// Create a test in the Feature directory...
+php artisan make:test UserTest
+// Create a test in the Unit directory...
+php artisan make:test UserTest --unit
+To run your tests, execute the phpunit command from your terminal:
+phpunit
+-----------------------------------
+جستجوی چند شرط باهم در دیتابیس و گرفتن فیلد از دیتابیس
+ <a class="" title="" href="/projects"><h3>{{ \App\Project::where('status', '<>', '0')
+                            ->where('status', '<>', '13')->get()->count() }} پروژه</h3></a>
+-----------------------------------
+change app key laravel:
+php artisan key:generate 
+-----------------------------------
+ایجاد کالکشن برای جستجوی آفلاین و سورت و ....
+Use Collection in Laravel:
+
+$groups = Group::where('Group1',$group->id)->get();
+$collection = collect($groups);
+//
+return $collection->where('id','>', 20); // ایجاد کالکشن برای جستجوی آفلاین دیتا
+یا : $groups = Group::where('Group1',$group->id)->get()->where('id','>', 20);
+
+$agahis = collect($agahis);
+$agahis = $agahis->sortByDesc('created_at');
+
+// تست نشده
+$myTable->orders = array(
+    array('column' => 'coloumn1', 'direction' => 'desc'), 
+    array('column' => 'coloumn2', 'direction' => 'asc')
+);
+-------
+دسترسی به کالکشن پس از دریافت اطلاعات از جدول:
+بعد از استفاده از تابع گت می توان بلافاصله از توابع کالکشن استفاده کرد و نیازی به استفاده از دستور کالکت نیست
+<?php $groups2 = App\Group::where("Group1", '<>', 0)->where("Group2", 0)->get()->sortBy('Group1'); ?>
+-----------------------------------
+Install pretty checkbox: https://lokesh-coder.github.io/pretty-checkbox/
+کاملا صحیح کار نکرد و متریال آیکون را نتوانستم بکار ببرم 97.11.12
+
+npm install pretty-checkbox
+
+use css File : https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css
+
+use Icon with pretty checkbox : https://google.github.io/material-design-icons/
+npm install material-design-icons
+
+for Remove Packge:
+npm uninstall pretty-checkbox --save-dev
+npm uninstall material-design-icons --save-dev
+-----------------
+Rmove Package with composer:
+The steps to remove a package from Laravel are:
+Remove declaration from composer.json (in "require" section)
+Remove Service Provider from "app/config/app.php" (reference in "providers" array)
+Remove any Class Aliases from "app/config/app.php"
+Remove any references to the package from your code :-)
+
+Run composer update
+Run composer dump-autoload
+-----------------------------------
+Laravel HTMLMin -> تست شود دقیقا نمیدانم که کار میکند یا خیر یا شاید در لوکال هاست کار نمی کند
+استفاده نکردم و فعلا از روش زیر برای مینی فای کردن استفاده کردم
+این روش را هم استفاده نکردم و از مینیفای دستی به وسیله سایت ها استفاده کردم
+https://github.com/FarshadGhanbari/laravel-HTMLMin
+app/Http/Middleware/OptimizeMiddleware.php
+app/Http/Kernel.php
+
+استفاده نشد:
+composer require htmlmin/htmlmin
+Once installed, you need to register the HTMLMin\HTMLMin\HTMLMinServiceProvider service provider in your config/app.php, and optionally alias our facade:
+        'HTMLMin' => HTMLMin\HTMLMin\Facades\HTMLMin::class,
+	
+Configuration:	
+php artisan vendor:publish
+-----------------------------------
+ارتباط لاراول با درگاه بانک ملت:
+https://github.com/larabook/gateway
+
+composer require larabook/gateway
+
+'providers' => [
+  ...
+  Larabookir\Gateway\GatewayServiceProvider::class, // <-- add this line at the end of provider array
+],
+
+'aliases' => [
+  ...
+  'Gateway' => Larabookir\Gateway\Gateway::class, // <-- add this line at the end of aliases array
+]
+-----------------------------------
+Install Sitemap:
+ورژن جدید این پکیج روی لاراول 5.5 نصب نشد برای همین مجبور شدم از نسخه 4 آن استفاده نمایم
+
+composer require spatie/laravel-sitemap:4.0
+-----------------------------------
+http => https
+تبدیل تمام روت ها به SSL
+// برای لوکال هاست غیرفعال شود
+\App\Http\Middleware\HttpsProtocol::class, // برای انتقال تمام لینک های سایت به https
+فایل HttpsProtocol.php را در میدل ور ایجاد کردم
+>>> از این روش استفاده نکردم و در فایل haccess
+تغییرات را انجام دادم و موفقیت آمیز بود
+-----------------------------------
+ایجاد توابع سراسری در لاراول:
+ایجاد یک فانکشن helpers:
+composer.json در
+"autoload": { در
+"files": [
+            "app/Helpers.php"
+        ],
+		سپس یک فایل هلپرز ساختم و تمام فانکشن هایی که نیاز دارم را در آنجا ذخیره کردم
+-----------------------------------
+Html & JavaScript Minifier:
+این پکیج خیلی عالی کار کرد:
+composer require htmlmin/htmlmin
+'providers' => [
+HTMLMin\HTMLMin\HTMLMinServiceProvider::class,
+    'aliases' => [
+'HTMLMin' => HTMLMin\HTMLMin\Facades\HTMLMin::class,
+Kernel: protected $middleware = [
+\HTMLMin\HTMLMin\Http\Middleware\MinifyMiddleware::class,
+-----------------------------------
+##################################################################################################################################
+Git Verision Control:
+git init
+
+git config --global user.email "mehdi163000@gmail.com"
+git config --global user.name "Mehdi163000"
+
+مشاهده تنظیمات ثبت شده گیت:
+git config --list
+
+git add .
+//git commit -m "Install Project" 
+اگر از دستور زیر استفاده کنیم نیازی به وارد کردن دستور اد نقطه نداریم
+git commit -a -m "Add npm to Project" ذخیره کردن فایل های تازه اضافه شده به همراه ذخیره کامنت
+
+git log مشاهده کامنت های قبلی ذخیره شده
+
+مشاهده تغییرات
+git diff
+مشاهده تغییرات بدون اینتر زدن و صفحه بندی:
+git --no-pager diff
+
+مشاهده وضعیت:
+git status
+-----------
+مشاهده کامیت های ثبت شده:
+git log
+برای دیدن نسخه فشرده کامیت‌ها که هر کامیت تنها یک خط دارد:
+git log --pretty=oneline
+---->>>
+git log --pretty=format:"%h%x09%an%x09%ad%x09%s"
+git log --pretty=format:"%H %an %ad"
+git log --pretty=format:"%H %an %ad" --date=short
+
+Color log View:
+git log --pretty="%C(Yellow)%h  %C(reset)%ad (%C(Green)%cr%C(reset))%x09 %C(Cyan)%an: %C(reset)%s"
+
+**********:Important: >>>
+git log --pretty="%C(Yellow)%h  %C(reset)%ad (%C(Green)%cr%C(reset))%x09 %C(Cyan)%an: %C(reset)%s" --date=short
+
+git config --global alias.work 'log --pretty=format:"%C(yellow)%h %ar %C(auto)%d %Creset %s , %Cblue%cn" --graph --all'
+-----------
+مشاهده تغییرات بصورت گراف و شاخه به شاخه
+git log --graph
+-------------
+How to exit git log or git diff:
+Type q to exit this screen. Type h to get help.
+q
+-----------
+مشاهده تغییرات داخل کامیت:
+git log -p
+------------
+مشاهده تغییرات یک کامیت خاص:
+git show commit_id
+------------
+تفاوت تغییرات بین دو کامیت را نمایش میدهد
+git blame [File Name] 
+------------
+برگشت تغییرات به آخرین کامیت ثبت شده: *****
+git checkout -- .
+برگشت به یکی از کامنت های قبلی - مثال:
+git checkout 8f6f5dc2be402da28c134aef2165510a6a2c722f
+برگشت به یکی از کامیت ها - اگر از هارد در ریست استفاده کنیم به کامیت های بعدی نمیتوانیم دوباره برگردیم
+git reset 8f6f5dc2be402da28c134aef2165510a6a2c722f
+تغییرات یک کامیت را ریست می کند و به حالت قبل باز میگرداند
+git reset –hard 8f6f5dc2be402da28c134aef2165510a6a2c722f
+----------*****
+بازگردانی  تمام تغییرات از آخرین  کامتیی که انجام شده است
+git reset --hard
+------------
+Git Basics - Viewing the Commit History:
+https://git-scm.com/book/en/v2/Git-Basics-Viewing-the-Commit-History
+
+مشاهده تغییرات 2 کامنت آخر:
+$ git log -p -2
+
+However, the time-limiting options such as --since and --until are very useful. For example, this command gets the list of commits made in the last two weeks:
+$ git log --since=2.weeks    -> not working
+
+------------
+ایجاد شاخه جدید به نام dev :
+git branch dev
+ایجاد شاخه با انتقال مستقیم به آن:
+git checkout -b develop
+مشاهده لیست شاخه ها در گیت:
+git branch -a
+رفتن به شاخه اصلی
+git checkout master
+رفتن به شاخه فرعی
+git checkout dev
+حذف یک شاخه فرعی - حذف باید در شاخه دیگری غیر از آن شاخه صورت گیرد:
+git branch -d dev
+تلفیق شاخه فرعی و شاخه اصلی و اعمال تغییرات در شاخه اصلی:
+ابتدا وارد شاخه اصلی یا شاخه ای که میخواهیم مرج در آنجا صورت گیرد میشویم:
+git merge develop  تمام اطلاعات شاخه فرعی را در شاخه اصلی اعمال میکند
+
+اگر در مرج شدن تداخلی داشتیم به روش زیر عمل می کنیم
+git status میگیریم
+تغییرات دلخواه را انجام می دهیم تا تداخلات از بین برود و سپس کامیت جدید میکنیم تا پیغام خطا در مستر از بین برود
+-----------------
+کار با شاخه ها و دستورات مهم:
+git branch نام شاخه ها را نشان می دهد
+git branch fixErrors شاخه جدید را می سازیم
+git checkout fixErrors انتقال به شاخه فرعی
+git merge fixErrors انتقال تغییرات به شاخه اصلی
+git branch -d fixErrors شاخه فرعی را حذف میکنیم
+git branch -D fixErrors شاخه فرعی را به اجبار حذف می کند - برای شاخه هایی که حذف نمی شوند
+
+git rm footer.html فایل فوتر را هم از گیت و بصورت فیزیکی حذف می کند
+git log دیدن کامیت ها
+ls فایل های پوشه جاری را نشان می دهد
+------------
+شاخه های مرج شده را نشان می دهد:
+git branch --merged
+
+شاخه های مرج نشده را نشان می دهد:
+git branch --no-merged
+------------
+اضافه کردن فایل gitignore
+touch .gitignore
+----------------------
+Add Project to GitHub: for Example:
+git remote add origin https://github.com/GoldChess/TestGit.git
+git push -u origin master
+------------------------------
+Create Const in Laravel:
+1) Create constants.php file in the config folder. The constants.php file will look like:
+ 
+ <?php
+return [
+    'name' => 'Stack Overflow',
+];
+
+2) Access it anywhere in the following way:
+config('constants.name')
+##################################################################################################################################
+JavaScript Commands: دستورات جاوااسکریپت
+------------------------------------------
+جداسازی مقدار رشته ای:
+  <select id="selectGroup2">
+                <option disabled selected value>انتخاب دسته بندی آگهی</option>
+                @foreach($groups2 as $group)
+                    <option value="{{$group->Group1}}#{{$group->id}}">{{ $group->Group1 }} -> {{ $group->Name }}</option>
+                @endforeach
+            </select>
+----------
+ document.getElementById("selectGroup2").onchange = function () {
+            let array = groupVal.split('#');
+            let group1 = parseInt(array[0]);
+            let group2 = parseInt(array[1]);
+             // alert(group1 + ' + ' + group2);
+            $('#textGroup1').val(group1);
+            $('#textGroup2').val(group2);
+};
+------------------------------------------
+------------------------------------------
+##################################################################################################################################
+PhpStorm 2018.2.2 - Editor Hotkeys: 2018/08/30
+---------------------
+مرتب کردن کدها
+ctrl+alt+L
+
+Redo:
+ctrl+shift+Z
+
+انتخاب متن مشابه در کدها:
+Alt + j
+
+collapsing all methods/functions:
+CTRL SHIFT numpad -
+CTRL SHIFT numpad +
+
+CTRL + B شما را به مکان تعریف آن متغیر یا متد در پروژه می برد
+
+CTRL + N جستجوی نام کلاس
+CTRL+SHIFT + N جستجوی نام فایل در پروژه مثلا ویوها
+
+می توان قسمتی از نام فایل را نوشت و سپس : قرار داد و شماره سطر را وارد کرد تا به آن سطر برود مثال:
+home.blade:77 به فایل هوم دات بلید خط 77 برو
+
+CTRL+SHIFT+Backspace یا “Forward”  و “Back” در mouse شما را به مکان قبلی ادیت می برد
+-------------------
+ایجاد خودکار دیو با یک کلاس:
+.row + tab		-> <div class="row"></div>
+
+---- دستورات غیرضروری ------------
+CTRL + SPACE لیست پیشنهادی متد ها یا متغر ها را در هنگام تایپ نام متغیر یا متد , میدهد
+CTRL + SHIFT + A برای جستجو در دستورات خود PHPSTORM IDE می باشد
+SHIFT + F6 رای اعمال تغییر نام متغیر به تمام جاهایی که از آن متغیر استفاده شده - دیدن منو refactor
+CTRL + F12 منویی برای شما باز می شود که می توان متد های آن فایل را انتخاب کنید و به آن جا بروید
+ALT+Enter تصحیح کد توسط پی اچ پی استورم
+
+pubf + tab -> public function funcName()
+-----------------------------------
+-----------------------------------
+Google Chrome Hotkeys:
+
+Shift + Esc -> Chrome Task Manager
+
+##################################################################################################################################
+SQL & Mysql Important Commands:
+############################
+عوض کردن یونیکد دیتابیس
+ALTER DATABASE agahisan CHARACTER SET utf8 COLLATE utf8_unicode_ci
+// 2: Test Shavad
+// ALTER DATABASE agahisan CHARACTER SET utf8 COLLATE utf8_general_ci
+
+ALTER DATABASE agahisa1_agahisan4 CHARACTER SET utf8 COLLATE utf8_unicode_ci
+
+Changing it database wide:
+
+ALTER DATABASE <database_name> CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+Changing it per table:
+
+ALTER TABLE <table_name> CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+Good practice is to change it at table level as it'll change it for columns as well. Changing for specific column is for any specific case.
+
+Changing collation for a specific column:
+
+ALTER TABLE <table_name> MODIFY <column_name> VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+--------------------------------
+##################################################################################################################################
+SEO Tools:
+--------------------
+------- Old --------------------
+HTML Minifier:		https://kangax.github.io/html-minifier/
+Minify CSS and JavaScript minifier:		https://www.minifier.org/
+Varvy SEO tool:		https://varvy.com/
+Page speed optimization:	https://varvy.com/pagespeed/
+Analyze your site’s speed:		https://gtmetrix.com/
+Google Search Console:		https://search.google.com/search-console/welcome
+
+--------- 2 -----------
+Minify Tools:
+CSS:
+https://csscompressor.com/
+JS: بررسی شود
+http://javascriptcompressor.com/
+--------------------------------
+-------------
+فشرده سازی فایل سی اس اس و فایل جی اس:
+Minify CSS & JS File:
+npm run production
+--------------------------------
+
+Unminify JS Code:
+https://www.ipvoid.com/js-unminify/
+Unminify JavaScript (JS) & CSS Code Online:
+https://www.unjscss.com/
+-----------------------------
+Resize Gif Animation File Online:
+https://ezgif.com/resize/ezgif-3-4d7260d218aa.gif
+With Optimize:
+http://gifgifs.com/optimizer/?0719-5d27a0724c499767373823.gif
+##################################################################################################################################
+JavaScript Function:
+------------------------------------------
+  // وارد کردن کاما در اعداد فارسی تا 999 میلیارد کار میکند
+        function InsertCommaToPersianNum (string) {
+            String.prototype.insertAt = function (index, string) {
+                return this.substr(0, index) + string + this.substr(index);
+            };
+
+            if (string.length === 4){
+                string = string.insertAt(1, ",");
+            }else if (string.length === 5){
+                string = string.insertAt(2, ",");
+            }else if (string.length === 6){
+                string = string.insertAt(3, ",");
+            }else if (string.length === 7){
+                string = string.insertAt(1, ",");
+                string = string.insertAt(5, ",");
+            }else if (string.length === 8){
+                string = string.insertAt(2, ",");
+                string = string.insertAt(6, ",");
+            }else if (string.length === 9){
+                string = string.insertAt(3, ",");
+                string = string.insertAt(7, ",");
+            }else if (string.length === 10){
+                string = string.insertAt(1, ",");
+                string = string.insertAt(5, ",");
+                string = string.insertAt(9, ",");
+            }else if (string.length === 11){
+                string = string.insertAt(2, ",");
+                string = string.insertAt(6, ",");
+                string = string.insertAt(10, ",");
+            }else if (string.length === 12){
+                string = string.insertAt(3, ",");
+                string = string.insertAt(7, ",");
+                string = string.insertAt(11, ",");
+            }
+
+            return string;
+        }
+------------------------------------------
+ //     // Insert to String Character
+        // // Use:  string = string.insertAt(1, ",");
+        String.prototype.insertAt = function (index, string) {
+            return this.substr(0, index) + string + this.substr(index);
+        };
+------------------------------------------
+ function toFarsiNumber(n) { // تبدیل اعداد انگلیسی به فارسی
+            const farsiDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
+            return n
+                .toString()
+                .split('')
+                .map(x => farsiDigits[x])
+                .join('');
+        }
+------------------------------------------
+ //   // جداکردن سه رقم سه رقم اعداد
+        document.getElementById("priceMin").keyup(function (event) {
+            alert('for Test');
+
+            if (event.which >= 37 && event.which <= 40) {
+                event.preventDefault();
+            }
+            var $this = $(this);
+            var num = $this.val().replace(/,/g, '');
+            $this.val(num.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,"));
+        });
+        //------------------------------------------------------------------
+        $("form").submit(function (event) { // پاک سازی ویرگول سه رقم اعداد از تکست باکس ها
+
+            $('input.digits').each(function (i, el) {
+                var elem = $(el);
+                elem.val(removeComma(elem.val()));
+            });
+------------------------------------------
+function DeleteMessageAjax(msgID) {
+            swal({
+                title: "پیام حذف شود؟",
+                text: "آیا برای حذف پیام اطمینان دارید؟",
+                // icon: "warning",
+                buttons: ["انصراف", "بله"],
+                dangerMode: true,
+            })
+                .then((willReport) => {
+                    if (willReport) {
+                        let _token = '{{csrf_token()}}';
+                        $.ajax({
+                            method: 'post',
+                            url: '/message/DeleteMessageAjax/' + msgID,
+                            headers: {
+                                'X-CSRF-TOKEN': _token
+                            },
+                            dataType: "html",
+
+                            success: function (result) {
+
+                                let dAjax = $('#AjaxDivParent' + msgID);
+                                dAjax.empty();
+                                dAjax.append(result);
+                            },
+                            error: function (ex) {
+                                // alert(ex.responseText);
+                                swal("اشکال در عملیات", 'خطا در حذف کردن پیام - لطفا صفحه را یک بار رفرش نمایید', {
+                                    icon: "error",
+                                    buttons: {
+                                        defeat: "بله",
+                                    },
+                                });
+                            }
+                        })
+                    } else {
+                        // return;
+                    }
+                });
+        }
+------------------------------------------
+ function checkboxAjax() {
+            let i;
+            let sumPrice = 0;
+            for (i = '{{$emkanats->min('id')}}'; i <= '{{$emkanats->max('id')}}'; i++) {
+                let ch = document.getElementById("checkbox" + i).checked;
+                if (ch == true) {
+                    sumPrice += parseInt($('#price' + i).text());
+                }
+            }
+
+            let dAjax = $('#priceAjax');
+            dAjax.empty();
+            dAjax.append(sumPrice);
+
+            let dAjax2 = $('#priceAjax2');
+            sumPrice = toFarsiNumber(sumPrice);
+            sumPrice = InsertCommaToPersianNum(sumPrice);
+            dAjax2.text(sumPrice);
+
+        }
+------------------------------------------
+ function SendPardakht() {
+            let i;
+            let sumPrice = 0;
+            for (i = '{{$emkanats->min('id')}}'; i <= '{{$emkanats->max('id')}}'; i++) {
+                let ch = document.getElementById("checkbox" + i).checked;
+                if (ch == true) {
+                    sumPrice += parseInt($('#price' + i).text());
+                }
+            }
+
+            window.open("/user/pasargadRequest/{{ $agahi->slug }}/" + sumPrice,"_self");
+
+        }
+------------------------------------------
+تبدیل آرایه ارسالی از جاوااسکریپت به آرایه از نوع پی اچ پی:
+ $buyEmkanats = explode(',', $buyEmkanats); // Convert JS Array to Php Array
+------------------------------------------
+ارسال به صفحه جدید با جاوااسکریپت:
+ swal({
+                    content: span,
+                    // icon: "warning",
+                    buttons: ["بستن پیغام", "تغییر نام کاربری یا رمز عبور"],
+                    dangerMode: true,
+                    // closeModal: false,
+                    closeOnClickOutside: false,
+
+                })
+                    .then((willReport) => {
+                        if (willReport) {
+
+                            let url = '/user/EditRegisterInfo';
+                            window.open(url, '_blank');
+                        } else {
+                            // swal("Your imaginary file is safe!");
+                        }
+------------------------------------------
+بررسی شود:
+How can i run artisan commands in cpanel
+
+You can make a personalized route, and call it when you need it:
+
+Route::get('/clear-cache', function() {
+    $output = new \Symfony\Component\Console\Output\BufferedOutput;
+    \Artisan::call('cache:clear', $output);
+    dd($output->fetch());
+});
+Another solution is to access ssh to your server and to run the commands.
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+----------------------------------------------------------------------------------------------- بررسی شود
+function formatNumber(num) { // جداسازی 3 رقم مبلغ
+            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+        }
+
+        function addCommas(e) { // جدا سازی 3 رقم مبلغ
+            let t = !(arguments.length > 1 && void 0 !== arguments[1]) || arguments[1];
+            if (!e) return e;
+            let n = "" + e;
+            n = n.split("٫").join("");
+            let r = t ? /(\d+)(\d{3})/ : /([0-9۰-۹٤٥٦]+)([0-9۰-۹٤٥٦]{3})/;
+            if (n)
+                for (; r.test(n);) n = n.replace(r, "$1٫$2");
+            return n
+        }
+
+        function addCommasX(nStr)
+        {
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+            var result = x1 + x2;
+            document.getElementById('result').value = result;
+        }
+
+        function InsertStrToString(str, n) {
+            var ret = [];
+            var i;
+            var len;
+
+            for(i = 0, len = str.length; i < len; i += n) {
+                ret.push(str.substr(i, n))
+            }
+
+            return ret
+            // use:
+            // sumPrice = InsertStrToString(sumPrice,3).join(',');
+        }
+
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function removeCommas(e) { // جدا سازی 3 رقم مبلغ
+            return e ? ("" + e).split("٫").join("") : e
+        }
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+##################################################################################################################################
+PHP Clean Code Method:
+------------------------------------------
+پاک کردن مقادیر نول از یک آرایه:
+Clean Null Value in Array:
+$mm = [1,2,null,5,null,7,8];
+$mm = array_filter($mm); -> $mm = [1,2,5,7,8]
+توجه: این تابع تمام مقادیر فالس را از تابع حذف میکند مثل صفر و نال و خالی و فالس
+برای اینکه فقط مقادیر نال را جدا کنیم و مقادیر صفر رو حذف نکنیم باید از چنین تابعی برای پاک سازی آرایه استفاده کنیم:
+function filterInt($arrayNumbers){
+	return array_filter(arrayNumbers, function(arrayNumbers){
+		return is_int(arrayNumbers)
+	})
+}
+-------------------------
+تست مقادیر اصلاح شده:
+var_export($mm);
+die();
+------------------------------------------
+Use Map key for search:
+
+if ($a == 'ir') {
+    $b = 'Iran';
+}else if ($a == 'ru') {
+    $b = 'Russia';
+} else {
+    $b = 'No Where';
+}
+این کد را به این صورت کلین میکنیم:
+$map = [
+    'ir' => 'Iran',
+    'ru' => 'Russia',
+];
+if (isset($map[$a])) {
+    $b = $map[$a];
+} else {
+    $b = 'No Where';
+}
+که قسمت دوم را هم به این صورت ریفکتور میکنیم:
+$b = $map[$a] ?? 'No Where';
+که این کد فقط در پی اچ پی بالاتر از نسخه 7 امکان پذیر است
+و می توانیم در لاراول به صورت زیر ریفکتور کنیم:
+$b = array_get($map, $a, 'No Where');
+------------------------------------------
+خروج زود هنگام از حلقه foreach:
+foreach ($all as $a) {
+    if ($a <= 2) continue;
+}
+-----------------------------------------------------------------
+Hokey for Clear Code in PhpStorm:
+alt + enter  -> عوض کردن جای شرط ها در حلقه ایف یا همان فیلیپ کردن شرط ها
+--------------------
+alt + ctrl + m
+Extract Method: نوع را مثلا پرایویت انتخاب میکنیم و اسم متد را وارد میکنیم تا یک متد ساخته شود
+مثال:
+if ($what == 'a') {
+    echo 'aaaa';
+    echo 'aaaa';
+    echo 'aaaa';
+} else {
+    # code...
+}
+قسمت داخل شرط اول را انتخاب میکنیم و هات کی مربوطه رو فشار میدیم و یک متد میسازیم که کد بالا رو به کد زیر تغییر میدیم:
+if ($what == 'a') {
+    return $this->aaa();
+} else {
+    # code...
+}
+که خود متد ساخته شده پرایویت به صورت زیر است:
+private function aaa() {
+    echo 'aaaa';
+    echo 'aaaa';
+    echo 'aaaa';
+}
+-----------------------------------------------------------------
+مرتب کردن کدها در VSCode:
+shift + alt + f
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+##################################################################################################################################
+متفرقه :
+------------------------------------------
+کشدارکردن حروف فارسی
+کــــــــــــشدار کردن حروف فـــــــارســـــی
+shift + j
+------------------------------------------
+Photoshop:
+
+Ctrl + Alt + I    resize image
+##################################################################################################################################
+Node JS:
+how to see node js version in windows:
+node -v
+##################################################################################################################################
+React Native:
+Install:
+1- use npm to install the Expo CLI command line utility:
+npm install -g expo-cli
+
+------------------------------------------
+------------------------------------------
+##################################################################################################################################
+React JS:
+Install:
+npm install -g create-react-app
+
+create-react-app counter-app
+npm start
+-----------
+https://github.com/facebook/create-react-app
+npx create-react-app my-app
+cd my-app
+npm start
+-----------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------
+------------------------------------------

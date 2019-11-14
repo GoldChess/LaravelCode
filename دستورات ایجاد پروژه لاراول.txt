@@ -1,0 +1,19 @@
+﻿ایجاد پروژه لاراول با ورژن 5.3 از طریق کامپوزر:
+composer create-project --prefer-dist laravel/laravel AgahiSan "5.3.*"
+--------------------------------------
+composer create-project --prefer-dist laravel/laravel Lravel_Roocket "5.4.*"
+--------------------------------------
+composer create-project --prefer-dist laravel/laravel Udemy-10projects_1-Basic "5.5.*"
+--------------------------------------
+composer create-project --prefer-dist laravel/laravel U10projects_5-RestAPI "5.5.*"
+--------------------------------------
+composer create-project --prefer-dist laravel/laravel Roocket-Shop1 "5.5.*"
+--------------------------------------
+composer create-project --prefer-dist laravel/laravel Agahisan4 "5.5.*"
+--------------------------------------
+composer create-project --prefer-dist laravel/laravel KarCafe1 "5.5.*"
+--------------------------------------
+composer create-project --prefer-dist laravel/laravel laraProject "5.4.*"
+--------------------------------------
+--------------------------------------
+--------------------------------------

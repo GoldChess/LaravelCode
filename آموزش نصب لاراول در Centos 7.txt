@@ -1,0 +1,99 @@
+﻿آموزش نصب لاراول در Centos 7
+
+در ادامه آموزش‌های لینوکس Centos 7 و لاراول در این مطلب قصد داریم به آموزش نصب لاراول در Centos 7 بپردازیم.
+
+همانطور که در مطلب معرفی لاراول خدمت شما توضیح دادیم ، لاراول یک فریمورک PHP است که امروزه به واسطه امکانات و مزایای خوبی که در اختیار توسعه دهندگان قرار می‌دهد ، محبوبیت زیادی پیدا کرده است.
+
+حال دراین مطلب به نصب مرحله به مرحله لاراول در CentOS 7 پرداخته تا بتوانید از این فریمورک محبوب استفاده نمایید.
+
+این آموزش دارای 3 فاز اصلی است.
+
+1- نصب پیش نیازها ( نصب استک LAMP )
+
+2- نصب و تنظیم لاراول
+
+3- تنظیم و استفاده از آن
+
+با نصب آموزش نصب لاراول در Centos 7 همراه ما باشید.
+
+آموزش نصب لاراول در Centos 7
+نصب php ، Apache و MariaDB
+در ابتدا به نصب مخزن EPEL می‌پردازیم چون بسیاری از پکیج‌های مورد نیاز در این مخزن یافت می‌شوند.
+yum -y install epel-release
+سپس دستور زیر را وارد کرده تا پکیج‌های موجود در Centos 7 آپدیت شود.
+yum -y update
+حال با وارد کردن دستور زیر Apache و MariaDB را نصب نمایید.
+yum -y install httpd mariadb-server mariadb
+پس از اتمام نصب Apache و MariaDB به نصب مخزن Webstatic پرداخته تا براحتی بتوانید تمام PHP و ملزومات آن را نصب نمایید.
+rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+سپس دستور زیر را وارد کنید تا PHP 7 نصب گردد.
+نکته : در این آموزش ما به نصب PHP 7 خواهیم پرداخت و شما می‌توانید نسخه‌های دیگر را نسبت به نیاز خود نصب نمایید. اما به این نکته توجه داشته باشید که لاراول PHP نسخه 5.6.4 به بالا را پشتیبانی می‌نماید.
+
+yum -y install php56w php56w-mysql php56w-mcrypt php56w-dom php56w-mbstring
+بعد از اتمام نصب PHP با وارد کردن دستور زیر شما می‌توانید نسخه نصب شده PHP خود را مشاهده نمایید.
+php -v
+با وارد کردن دستور زیر سرویس Apache و MariaDB را استارت کرده و آن را در استارت آپ قرار خواهید داد تا پس از ریبوت لینوکس هم سرویس‌ها به صورت خودکار استارت شوند.
+systemctl start httpd
+systemctl enable httpd
+systemctl start mariadb
+systemctl enable mariadb
+حال دستور زیر را وارد کنید تا تنظیمات MariaDB را انجام دهید.
+mysql_secure_installation
+پس از وارد کردن دستور بالا ، در ابتدا اینتر را زده و سپس پسوردی برای یوزر root پایگاه داده خود انتخاب نمایید و تا انتها با زدن کلید اینتر تنظیمات را به پایان برسانید.
+
+نصب و تنظیم لاراول
+در ابتدا به نصب Composer خواهیم پرداخت.
+curl -sS https://getcomposer.org/installer | php
+حال دستورات زیر را وارد کنید تا Composer به صورت کلی در لینوکس قابل دسترس باشد.
+mv composer.phar /usr/bin/composer
+chmod +x /usr/bin/composer
+حال می‌توانید با وارد کردن دستور زیر نسخه Composer در حال اجرا را دریافت کرده و از صحت عملکرد آن نیز مطمئن شوید.
+composer -V
+حال پس از نصب Composer ، سیستم آماده نصب لاراول می‌باشد. دستور زیر را وارد کرده تا Git نصب گردد.
+yum -y -install git
+به دایرکتوری وب Apache بروید.
+cd /var/www/laravel
+با دستور زیر از مخزن Laravel یک Clone بگیرید.
+git clone https://github.com/laravel/laravel.git
+حال به دایرکتوری Laravel رفته و Compser را نصب نمایید.
+cd /var/www/laravel
+composer install
+دستورات زیر را وارد کنید تا مجوز دسترسی Apache به فایل‌های لاراول را بدهید.
+chown -R apache:apache /var/www/laravel
+chmod -R 755 /var/www/laravel
+حال به دایرکتوری لاراول رفته و فایل env.example. را به env. تغییر نام دهید.
+cd /var/www/laravel
+mv .evn.example .env
+دستور زیر را وارد کنید تا کلید اپلیکیشن به حالت Random String تنظیم گردد.
+نکته : برای دسترسی به فریمورک لاراول باید کلید بر روی Random Sting تنظیم گردد تا در Session های مختلف کاربر دسترسی به لاراول داشته باشد.
+
+php artisan key:generate
+پس از وارد کردن دستور بالا ، بایستی خروجی مشابه عبارات زیر را دریافت کنید.
+
+[root@CentOS7]# php artisan key:generate
+    Application key [base64:PllGKlCqZSwTJKGyGacEN8FEJeEt0Jlyx1n8xMea3Iw=] set successfully.
+برای تأیید و اطمینان از نصب و تنظیم کلید دستور زیر را می‌توانید وارد نمایید.
+cat /var/www/laravel/.env
+حال پس از اطمینان از نصب به سراغ تنظیم Apache و استفاده از لاراول خواهیم رفت.
+
+تنظیم Apache و استفاده از لاراول
+با یک ویرایشگر فایل etv/httpd/conf/httpd.conf/ را باز کنید.
+nano /etc/httpd/conf/httpd.conf
+در انتهای فایل httpd.conf عبارات زیر را اضافه کنید.
+<VirtualHost *:80>
+    DocumentRoot /var/www/html/your_site/public
+    ServerName your_domain
+
+    <Directory /var/www/html/your_site/>
+        AllowOverride All
+    </Directory>
+</VirtualHost>
+دقت داشته باشید به جای your_site نام دایرکتوری که برای لاراول ساخته‌اید را وارد نمایید.
+
+در این جا ما به نام laravel ساخته‌ایم.
+
+سپس با دستور زیر Apache را ریستارت کرده تا از آن بتوانید استفاده نمایید.
+systemctl restart httpd
+در پایان شما موفق به نصب لاراول شده‌اید.
+
+امیدواریم از آموزش نصب لاراول در Centos 7 استفاده مفید و لازم را برده باشید.
